@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Pass 1: Strict Search (Title + Year)
+    // Pass 1: Strict Search
     let url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(title || '')}&year=${year}`;
     let res = await fetch(url, { 
       headers: { Authorization: `Bearer ${TMDB_TOKEN.trim()}` } 
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     let data = await res.json();
     let posterPath = data.results?.[0]?.poster_path;
 
-    // Pass 2: Loose Search (Title only) - Runs if Pass 1 found nothing
+    // Pass 2: Loose Search (Falls back if title+year fails)
     if (!posterPath) {
       url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(title || '')}`;
       res = await fetch(url, { 

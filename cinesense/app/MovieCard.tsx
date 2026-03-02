@@ -8,7 +8,6 @@ export default function MovieCard({ movie }: { movie: any }) {
   const [aiVerdict, setAiVerdict] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Fetch poster on mount
   useEffect(() => {
     async function getPoster() {
       try {
@@ -26,7 +25,6 @@ export default function MovieCard({ movie }: { movie: any }) {
     getPoster();
   }, [movie.Title, movie.ReleaseYear]);
 
-  // Call Gemini AI Route
   const getAiVerdict = async () => {
     setIsAnalyzing(true);
     try {
@@ -63,15 +61,13 @@ export default function MovieCard({ movie }: { movie: any }) {
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
           />
         ) : (
-          <div className="relative h-full w-full">
+          <div className="h-full w-full">
              <img 
                 src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=500" 
-                className="object-cover h-full w-full opacity-20 grayscale"
-                alt="Fallback"
+                className="object-cover h-full w-full opacity-30 grayscale"
+                alt="Cinema Placeholder"
               />
-             <div className="absolute inset-0 flex items-center justify-center text-slate-500 italic text-xs p-4 text-center">
-                Poster Unavailable
-             </div>
+             {/* Text removed for a cleaner look */}
           </div>
         )}
       </div>
@@ -88,7 +84,6 @@ export default function MovieCard({ movie }: { movie: any }) {
           </span>
         </div>
 
-        {/* AI Action Button */}
         <button 
           onClick={getAiVerdict}
           disabled={isAnalyzing}
@@ -97,7 +92,6 @@ export default function MovieCard({ movie }: { movie: any }) {
           {isAnalyzing ? 'Analyzing...' : aiVerdict ? 'Verdict Ready' : 'Get AI Verdict'}
         </button>
 
-        {/* AI Result Display */}
         {aiVerdict && (
           <div className="mt-3 text-xs italic text-cyan-100 bg-cyan-950/40 p-3 rounded-lg border border-cyan-500/20 animate-in fade-in slide-in-from-top-1">
             "{aiVerdict}"
