@@ -1,13 +1,13 @@
 import { supabase } from '@/lib/supabase';
 
 export default async function Home() {
-  // Fetch movies from our Supabase table
-  const { data: movies, error } = await supabase
+  // Fetch Movies from our Supabase table
+  const { data: Movies, error } = await supabase
     .from('Movies')
     .select('*')
     .limit(12); // Let's just grab the first 12 for now
 
-  if (error) return <div>Error loading movies: {error.message}</div>;
+  if (error) return <div>Error loading Movies: {error.message}</div>;
 
   return (
     <main className="min-h-screen bg-slate-900 text-white p-8">
@@ -19,14 +19,14 @@ export default async function Home() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {movies?.map((movie) => (
+        {Movies?.map((movie) => (
           <div key={movie.id} className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500 transition-colors">
             {/* If you have poster_urls, we'd put an <img> here */}
             <div className="p-4">
-              <h2 className="font-bold text-lg truncate">{movie.title}</h2>
-              <p className="text-sm text-slate-400">{movie.release_year} • {movie.runtime}m</p>
+              <h2 className="font-bold text-lg truncate">{movie.Title}</h2>
+              <p className="text-sm text-slate-400">{movie.ReleaseYear} • {movie.Runtime}m</p>
               <div className="mt-2 text-xs font-semibold text-blue-400 uppercase tracking-wider">
-                {movie.genres}
+                {movie.Genres}
               </div>
             </div>
           </div>
