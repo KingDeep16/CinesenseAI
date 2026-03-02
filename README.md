@@ -9,7 +9,7 @@ Install dependencies: npm install
 
 Create a .env.local file: you must create this file in the root folder.
 
-Fill in the Keys: you will need to provide their own keys for:
+Fill in the Keys: you will need to provide your own keys for:
 
 NEXT_PUBLIC_SUPABASE_URL (From Supabase project settings)
 
