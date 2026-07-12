@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import SearchBar from './SearchBar';
-import MovieCard from './moviecard';
+import MovieCard from './MovieCard';
 import Filters from './filters';
 
 export default async function Home({ 
