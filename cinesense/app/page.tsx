@@ -6,7 +6,7 @@ import Filters from './filters';
 export default async function Home({ 
   searchParams 
 }: { 
-  searchParams: Promise<{ q?: string, p?: string, g?: string, r?: string, c?: string }> 
+  searchParams: Promise<{ q?: string; p?: string; g?: string; r?: string; c?: string }> 
 }) {
   // 1. Await and extract all filter parameters
   const resolvedParams = await searchParams;
@@ -20,37 +20,33 @@ export default async function Home({
   const from = (page - 1) * itemsPerPage;
   const to = from + itemsPerPage - 1;
 
-  // 2. Initialize the Supabase query
+  // 2. Fetch the dynamic genre list independently from the main query
+  const { data: genreData } = await supabase.rpc('get_unique_genres');
+  const genres = genreData?.map((g: any) => g.genre_name) || [];
+
+  // 3. Initialize the Supabase movie query
   let dbQuery = supabase
     .from('Movies')
     .select('*', { count: 'exact' });
 
-  // 3. Conditional Filter Chaining
+  // 4. Clean Conditional Filter Chaining
   if (query) {
     dbQuery = dbQuery.ilike('Title', `%${query}%`);
   }
   
-if (genre) {
-  // We use ilike to find the genre even if it's buried between other pipes
-  // Example: %Horror% will find "|Horror|" or "Action|Horror"
-  dbQuery = dbQuery.ilike('Genre', `%${genre}%`);
-}
-
-// 3. Fetch the dynamic genre list
-// Ensure this also points to the updated SQL function
-const { data: genreData } = await supabase.rpc('get_unique_genres');
-const genres = genreData?.map((g: any) => g.genre_name) || [];
+  if (genre) {
+    dbQuery = dbQuery.ilike('Genre', `%${genre}%`);
+  }
 
   if (minRating) {
     dbQuery = dbQuery.gte('TMDBRating', parseFloat(minRating));
   }
 
   if (castSearch) {
-    // Note: Use .contains('Cast', [castSearch]) if your column is a Postgres Array
     dbQuery = dbQuery.ilike('Cast', `%${castSearch}%`);
   }
 
-  // 4. Finalize with ordering and range
+  // 5. Finalize execution with ordering and range
   const { data: movies, count, error } = await dbQuery
     .order('TMDBRating', { ascending: false })
     .range(from, to);
@@ -59,7 +55,13 @@ const genres = genreData?.map((g: any) => g.genre_name) || [];
   const hasNextPage = to < totalCount - 1; 
   const hasPreviousPage = page > 1;
 
-  if (error) return <div className="text-red-500 p-10 text-center font-mono">Error: {error.message}</div>;
+  if (error) {
+    return (
+      <div className="text-red-500 p-10 text-center font-mono">
+        Error: {error.message}
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#0f172a] text-slate-100 p-6 md:p-12">
@@ -82,14 +84,14 @@ const genres = genreData?.map((g: any) => g.genre_name) || [];
         )}
       </header>
       
-      {/* Grid with 5 columns for the smaller card size */}
+      {/* Movie Results Grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {movies?.map((movie) => (
           <MovieCard key={movie.id} movie={movie} />
         ))}
       </div>
 
-      {/* Pagination with support for all search params */}
+      {/* Pagination */}
       <div className="mt-20 flex justify-center items-center gap-8 pb-20">
         {hasPreviousPage && (
           <a 
